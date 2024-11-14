@@ -102,6 +102,77 @@
         input[type="datetime-local"] {
             width: 200px;
         }
+
+        .datetime-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .datetime-input input[type="date"],
+        .datetime-input input[type="time"] {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            width: auto;
+        }
+
+        .webgl-container {
+            max-width: 100% !important;
+            margin: 20px auto;
+        }
+
+        #unity-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+        }
+
+        #unity-canvas {
+            width: 100%;
+            height: 100%;
+            background: #231F20;
+        }
+
+        #unity-loading-bar {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        #unity-progress-bar-empty {
+            width: 200px;
+            height: 20px;
+            margin-top: 10px;
+            background: url('packaged_Navigation/TemplateData/progress-bar-empty-dark.png') no-repeat center;
+        }
+
+        #unity-progress-bar-full {
+            width: 0%;
+            height: 100%;
+            background: url('packaged_Navigation/TemplateData/progress-bar-full-dark.png') no-repeat center;
+        }
+
+        #unity-footer {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        #unity-fullscreen-button {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .tip {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +181,7 @@
         <a href="#" class="nav-link active" data-page="add">加法计算器</a>
         <a href="#" class="nav-link" data-page="subtract">减法计算器</a>
         <a href="#" class="nav-link" data-page="timestamp">时间戳转换</a>
+        <a href="#" class="nav-link" data-page="webgl">WebGL演示</a>
     </div>
 
     <!-- 加法计算器页面 -->
@@ -156,7 +228,10 @@
             <!-- 日期转时间戳 -->
             <div class="converter-section">
                 <h3>日期转时间戳</h3>
-                <input type="datetime-local" id="date-input">
+                <div class="datetime-input">
+                    <input type="date" id="date-input">
+                    <input type="time" id="time-input" step="1">
+                </div>
                 <br>
                 <button onclick="convertDate()">转换</button>
                 <div class="result-container">
@@ -167,6 +242,43 @@
         </div>
     </div>
 
-    <script src="calculator.js"></script>
+    <!-- WebGL 页面 -->
+    <div id="webgl-page" class="page">
+        <div class="calculator webgl-container">
+            <h2>Unity WebGL 演示</h2>
+            <div id="unity-container" class="unity-desktop">
+                <canvas id="unity-canvas"></canvas>
+                <div id="unity-loading-bar">
+                    <div id="unity-logo"></div>
+                    <div id="unity-progress-bar-empty">
+                        <div id="unity-progress-bar-full"></div>
+                    </div>
+                </div>
+                <div id="unity-footer">
+                    <div id="unity-fullscreen-button" style="background: url('packaged_Navigation/TemplateData/fullscreen-button.png') no-repeat center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/timestamp.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+    <script src="js/webgl.js"></script>
+    <script src="js/unity-loader.js"></script>
+    <script>
+        // 在 DOMContentLoaded 事件中初始化 WebGL
+        document.addEventListener('DOMContentLoaded', function() {
+            // 当切换到 WebGL 页面时初始化
+            document.querySelector('[data-page="webgl"]').addEventListener('click', function() {
+                // 确保只初始化一次
+                if (!window.webglDemo) {
+                    window.webglDemo = new WebGLDemo('glcanvas');
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
