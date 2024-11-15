@@ -1,23 +1,35 @@
-// 计算器相关功能
-function calculate(type) {
-    // 获取输入值
-    const num1 = parseFloat(document.getElementById(`${type}-num1`).value);
-    const num2 = parseFloat(document.getElementById(`${type}-num2`).value);
-    
-    // 检查输入是否为有效数字
+function calculate() {
+    const num1 = parseFloat(document.getElementById('num1').value);
+    const num2 = parseFloat(document.getElementById('num2').value);
+    const operator = document.getElementById('operator').value;
+    let result;
+
     if (isNaN(num1) || isNaN(num2)) {
-        document.getElementById(`${type}-result`).textContent = '请输入有效的数字';
+        alert('请输入有效的数字');
         return;
     }
-    
-    // 根据类型计算结果
-    let result;
-    if (type === 'add') {
-        result = num1 + num2;
-    } else if (type === 'subtract') {
-        result = num1 - num2;
+
+    switch (operator) {
+        case '+':
+            result = num1 + num2;
+            break;
+        case '-':
+            result = num1 - num2;
+            break;
+        case '*':
+            result = num1 * num2;
+            break;
+        case '/':
+            if (num2 === 0) {
+                alert('除数不能为0');
+                return;
+            }
+            result = num1 / num2;
+            break;
     }
+
+    // 处理小数点后过多位数的情况
+    result = Math.round(result * 1000000) / 1000000;
     
-    // 显示结果
-    document.getElementById(`${type}-result`).textContent = result;
+    document.getElementById('result').textContent = result;
 } 
