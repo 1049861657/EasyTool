@@ -81,6 +81,10 @@
             content: '⚓';
         }
 
+        .nav-bar a[data-page="request"]::before {
+            content: '🌐';
+        }
+
         /* 响应式设计 */
         @media (max-width: 600px) {
             .nav-bar {
@@ -712,6 +716,92 @@
             color: #666;
             white-space: nowrap;  /* 防止换行 */
         }
+
+        /* GET请求工具样式 */
+        .request-tool {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .request-tool h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .url-input-group input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .url-input-group input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .response-area {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .request-btn {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .clear-btn {
+            padding: 12px 25px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .request-btn:hover, .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .request-btn:active, .clear-btn:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body>
@@ -722,6 +812,7 @@
         <a href="#" class="nav-link" data-page="coordinates">经纬度转换</a>
         <a href="#" class="nav-link" data-page="webgl">锚链计算</a>
         <a href="#" class="nav-link" data-page="database">数据库查看</a>
+        <a href="#" class="nav-link" data-page="request">GET请求</a>
         <div class="version-info">v1.0.2</div>
     </div>
 
@@ -919,6 +1010,21 @@
         </div>
     </div>
 
+    <!-- GET请求工具页面 -->
+    <div id="request-page" class="page">
+        <div class="request-tool">
+            <h2>GET请求测试工具</h2>
+            <div class="url-input-group">
+                <input type="text" id="request-url" placeholder="请输入URL（例如：https://api.example.com/data）">
+            </div>
+            <textarea id="response-result" class="response-area" readonly placeholder="响应结果将显示在这里..."></textarea>
+            <div class="button-group">
+                <button class="request-btn" onclick="sendGetRequest()">发送请求</button>
+                <button class="clear-btn" onclick="clearRequest()">清除</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/navigation.js"></script>
@@ -927,6 +1033,7 @@
     <script src="js/coordinates.js"></script>
     <script src="js/webgl.js"></script>
     <script src="js/database.js"></script>
+    <script src="js/request.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.nav-link').forEach(link => {

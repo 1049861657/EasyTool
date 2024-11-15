@@ -30,6 +30,7 @@ app.use('/StreamingAssets', express.static(path.join(__dirname, 'packaged_Naviga
 
 // API 路由
 app.use('/api', require('./routes/database'));
+app.use('/test', require('./routes/test'));
 
 // 页面路由
 app.get('*', (req, res) => {
