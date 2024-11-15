@@ -246,18 +246,10 @@
     <div id="webgl-page" class="page">
         <div class="calculator webgl-container">
             <h2>Unity WebGL 演示</h2>
-            <div id="unity-container" class="unity-desktop">
-                <canvas id="unity-canvas"></canvas>
-                <div id="unity-loading-bar">
-                    <div id="unity-logo"></div>
-                    <div id="unity-progress-bar-empty">
-                        <div id="unity-progress-bar-full"></div>
-                    </div>
-                </div>
-                <div id="unity-footer">
-                    <div id="unity-fullscreen-button" style="background: url('packaged_Navigation/TemplateData/fullscreen-button.png') no-repeat center"></div>
-                </div>
-            </div>
+            <p>点击下面的按钮在新窗口中打开 WebGL 演示</p>
+            <button onclick="openWebGL()">
+                打开 WebGL 演示
+            </button>
         </div>
     </div>
 
@@ -265,20 +257,37 @@
     <script src="js/navigation.js"></script>
     <script src="js/calculator.js"></script>
     <script src="js/timestamp.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
-    <script src="js/webgl.js"></script>
-    <script src="js/unity-loader.js"></script>
     <script>
-        // 在 DOMContentLoaded 事件中初始化 WebGL
         document.addEventListener('DOMContentLoaded', function() {
-            // 当切换到 WebGL 页面时初始化
-            document.querySelector('[data-page="webgl"]').addEventListener('click', function() {
-                // 确保只初始化一次
-                if (!window.webglDemo) {
-                    window.webglDemo = new WebGLDemo('glcanvas');
-                }
+            // 保留导航相关的代码
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                });
             });
         });
+
+        function openWebGL() {
+            // 判断当前环境
+            const isLocalhost = window.location.hostname === 'localhost' || 
+                              window.location.hostname === '127.0.0.1';
+            const isFileProtocol = window.location.protocol === 'file:';
+            
+            if (isFileProtocol) {
+                // 如果是直接打开HTML文件，使用服务器地址
+                window.open('http://localhost:8080/webgl', '_blank');
+            } 
+            else if (isLocalhost) {
+                // 本地服务器环境
+                window.open('http://localhost:8080/webgl', '_blank');
+            } 
+            else {
+                // GitHub Pages 环境
+                window.open(`${window.location.origin}/EasyTool/packaged_Navigation`, '_blank');
+            }
+        }
     </script>
 </body>
 </html> 
