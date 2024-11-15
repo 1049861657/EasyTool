@@ -1,6 +1,6 @@
 {
   "name": "easy-tool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "在线工具箱",
   "main": "server.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "mysql2": "^3.11.4",
-    "node-fetch": "^2.7.0"
+    "fetch": "^1.1.0",
+    "mysql2": "^3.11.4"
   }
 }

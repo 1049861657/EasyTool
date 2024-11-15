@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');
 
 router.get('/proxy', async (req, res) => {
     try {
@@ -19,7 +18,6 @@ router.get('/proxy', async (req, res) => {
         const contentType = response.headers.get('content-type');
         const data = await response.text();
 
-        // 返回响应信息
         res.json({
             success: true,
             status: response.status,
