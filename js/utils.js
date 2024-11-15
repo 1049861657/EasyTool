@@ -1,17 +1,16 @@
 // 通用工具函数
 function copyText(elementId) {
     const text = document.getElementById(elementId).textContent;
-    if (text === '-' || text.includes('请输入') || text.includes('无效')) {
-        return;
-    }
-
     navigator.clipboard.writeText(text).then(() => {
-        const button = event.target;
-        const originalText = button.textContent;
-        button.textContent = '已复制';
+        const toast = document.getElementById('copyToast');
+        toast.classList.add('show');
+        
         setTimeout(() => {
-            button.textContent = originalText;
-        }, 1000);
+            toast.classList.remove('show');
+        }, 2000);
+    }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动复制');
     });
 }
 

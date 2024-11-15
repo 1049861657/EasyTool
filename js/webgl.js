@@ -245,3 +245,24 @@ class WebGLDemo {
         requestAnimationFrame(this.render.bind(this));
     }
 } 
+
+// 添加页面切换时的初始化代码
+document.addEventListener('DOMContentLoaded', function() {
+    // 当切换到 WebGL 页面时初始化
+    document.querySelector('[data-page="webgl"]').addEventListener('click', function() {
+        // 确保只初始化一次
+        if (!window.webglDemo) {
+            window.webglDemo = new WebGLDemo('glcanvas');
+        }
+    });
+});
+
+function openWebGL() {
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    
+    if (isGitHubPages) {
+        window.open(`${window.location.origin}/EasyTool/packaged_Navigation`, '_blank');
+    } else {
+        window.open('http://localhost:8080/webgl', '_blank');
+    }
+} 

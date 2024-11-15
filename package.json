@@ -1,23 +1,15 @@
 {
-  "dependencies": {
-    "express": "^4.21.1"
-  },
-  "scripts": {
-    "start": "node server.js"
-  },
-  "name": "web-tools",
-  "description": "一个简单的网页加法计算器。",
-  "version": "1.0.0",
+  "name": "easy-tool",
+  "version": "1.0.1",
+  "description": "在线工具箱",
   "main": "server.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/1049861657/EasyTool.git"
+  "scripts": {
+    "start": "node server.js",
+    "update-version": "node update-version.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/1049861657/EasyTool/issues"
-  },
-  "homepage": "https://github.com/1049861657/EasyTool#readme"
+  "author": "1049861657",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
