@@ -4,6 +4,8 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import multer from 'multer';
+import cloudinary from 'cloudinary';
 
 const app = express();
 
@@ -16,6 +18,13 @@ app.use(cors());
 // 基础中间件
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cloudinary 配置
+cloudinary.config({ 
+    cloud_name: 'dibrpa3xg', 
+    api_key: '593119669315691', 
+    api_secret: '8GJSVDGX3XSM3mXCxc1hrrrerRc' 
+});
 
 // 请求日志中间件
 app.use((req, res, next) => {
@@ -32,10 +41,12 @@ app.use((req, res, next) => {
 // 导入路由
 import * as database from './routes/database.js';
 import proxyRouter from './routes/proxy.js';
+import uploadRouter from './api/upload.js';
 
 // API 路由注册（放在最前面）
 app.use('/api/database', database.router);
 app.use('/api/proxy', proxyRouter);
+app.use('/api/upload', uploadRouter);
 
 // 静态文件服务
 app.use(express.static(__dirname));
@@ -44,7 +55,12 @@ app.use('/TemplateData', express.static(path.join(__dirname, 'packaged_Navigatio
 app.use('/StreamingAssets', express.static(path.join(__dirname, 'packaged_Navigation/StreamingAssets')));
 
 // 页面路由放在最后
-app.get('*', (req, res) => {
+app.get('*', (req, res, next) => {
+    // 排除 API 路由
+    if (req.path.startsWith('/api/')) {
+        return next();
+    }
+    
     if (req.path === '/webgl') {
         res.sendFile(path.join(__dirname, 'packaged_Navigation/index.html'));
     } else {
