@@ -802,6 +802,78 @@
         .request-btn:active, .clear-btn:active {
             transform: translateY(0);
         }
+
+        /* 添加连接按钮态样式 */
+        .db-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .db-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .db-btn.connected {
+            background-color: #22c55e;
+        }
+
+        .db-btn.connected:hover {
+            background-color: #16a34a;
+        }
+
+        /* 添加连接成功提示样式 */
+        .connection-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            display: none;
+        }
+
+        .connection-status.success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            display: block;
+        }
+
+        .connection-status.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            display: block;
+        }
+
+        /* 添加连接表单的过渡动画 */
+        .db-connection-form {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .db-connection-form.collapsed {
+            max-height: 0;
+            padding: 0;
+            opacity: 0;
+        }
+
+        /* 添加切换图标的动画 */
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-180deg);
+        }
+
+        /* 添加可点击样式 */
+        .db-header {
+            cursor: pointer;
+        }
+
+        .db-header:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
@@ -988,22 +1060,39 @@
                         <input type="text" id="db-name" value="channel">
                     </div>
                     <button class="db-btn" onclick="connectDatabase()">连接数据库</button>
+                    <div class="connection-status"></div>
                 </div>
             </div>
 
             <!-- 表格显示区域 -->
             <div id="table-section" class="db-section" style="display: none;">
                 <div class="table-header">
-                    <select id="table-select" onchange="loadTableData(1)">
+                    <select id="table-select">
                         <option value="">选择数据表</option>
                     </select>
                 </div>
                 <div class="table-container">
-                    <div class="table-wrapper">
+                    <div class="table-scroll">
                         <table id="data-table">
                             <thead></thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                    <div class="table-footer">
+                        <div class="page-size-selector">
+                            <select onchange="changePageSize(this.value)">
+                                <option value="10">10 条/页</option>
+                                <option value="20">20 条/页</option>
+                                <option value="50">50 条/页</option>
+                                <option value="100">100 条/页</option>
+                            </select>
+                        </div>
+                        <div class="pagination">
+                            <!-- 分页按钮将通过 JavaScript 动态生成 -->
+                        </div>
+                        <div class="total-count">
+                            <!-- 总记录数将通过 JavaScript ���态更新 -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1019,12 +1108,13 @@
             </div>
             <textarea id="response-result" class="response-area" readonly placeholder="响应结果将显示在这里..."></textarea>
             <div class="button-group">
-                <button class="request-btn" onclick="sendGetRequest()">发送请求</button>
-                <button class="clear-btn" onclick="clearRequest()">清除</button>
+                <button class="request-btn" id="send-request-btn">发送请求</button>
+                <button class="clear-btn" id="clear-request-btn">清除</button>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/navigation.js"></script>
@@ -1033,17 +1123,37 @@
     <script src="js/coordinates.js"></script>
     <script src="js/webgl.js"></script>
     <script src="js/database.js"></script>
-    <script src="js/request.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const pageId = this.getAttribute('data-page');
-                    showPage(pageId);
+    <script type="module">
+        import ProxyRequest from './js/proxyRequest.js';
+
+        // 事件绑定
+        function bindEvents() {
+            console.log('开始绑定事件...');
+            const sendButton = document.getElementById('send-request-btn');
+            const clearButton = document.getElementById('clear-request-btn');
+
+            if (sendButton) {
+                console.log('找到发送按钮，绑定点击事件');
+                sendButton.addEventListener('click', () => {
+                    console.log('点击发送按钮');
+                    ProxyRequest.handleRequest();
                 });
-            });
-        });
+            } else {
+                console.error('未找到发送按钮!');
+            }
+
+            if (clearButton) {
+                console.log('找到清除按钮，绑定点击事件');
+                clearButton.addEventListener('click', () => ProxyRequest.clearUI());
+            }
+        }
+
+        // 确保在 DOM 加载完成后绑定事件
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindEvents);
+        } else {
+            bindEvents();
+        }
     </script>
 </body>
 </html> 

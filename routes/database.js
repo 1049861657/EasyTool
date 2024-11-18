@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { DatabaseService } from '../services/database.js';
+
 const router = express.Router();
-const DatabaseService = require('../services/database');
 
 router.post('/connect', async (req, res) => {
     try {
@@ -31,4 +32,4 @@ router.post('/query', async (req, res) => {
     }
 });
 
-module.exports = router; 
+export { router };
