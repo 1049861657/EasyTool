@@ -46,17 +46,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 添加格式化时间函数
+    // 修改格式化时间函数
     function formatDateTime(dateString) {
-        return new Intl.DateTimeFormat('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        }).format(new Date(dateString));
+        try {
+            // 检查是否是有效的日期字符串
+            if (!dateString) {
+                throw new Error('Invalid date');
+            }
+
+            // 尝试直接创建日期对象
+            const date = new Date(dateString);
+            
+            // 检查是否是有效日期
+            if (isNaN(date.getTime())) {
+                throw new Error('Invalid date');
+            }
+
+            return new Intl.DateTimeFormat('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Shanghai'  // 明确指定使用东八区
+            }).format(date);
+        } catch (error) {
+            console.error('日期格式化错误:', error);
+            return '时间格式错误';  // 返回一个默认值而不是抛出错误
+        }
     }
 
     // 格式化文件大小
@@ -151,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // 先清空文件网格
             fileGrid.innerHTML = '';
             
-            // 添加加载动画到文件列表下方
+            // 添加加载动画
             const loadingSpinner = document.createElement('div');
             loadingSpinner.className = 'loading-spinner';
             fileGrid.appendChild(loadingSpinner);
@@ -200,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('加载文件失败:', error);
-            fileGrid.innerHTML = '<div class="error-message fade-in">加载文件失败，请稍后重试</div>';
+            fileGrid.innerHTML = `<div class="error-message fade-in">加载文件列表失败，请稍后重试<br>错误信息: ${error.message}</div>`;
         }
     }
 
@@ -249,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ��面加载时加载文件列表
+    // 面加载时加载文件列表
     loadFiles();
 });
 

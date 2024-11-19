@@ -6,6 +6,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import mysql from 'mysql2/promise';
+import { dbConfig } from '../config/database.js';
 
 const router = Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -38,15 +39,6 @@ const upload = multer({
         cb(null, true);
     }
 });
-
-// 数据库连接配置
-const dbConfig = {
-    host: 'autorack.proxy.rlwy.net',
-    user: 'root',
-    password: 'FOWyrfWGiiyoHzcWmeatLHPvptbqsnPw',
-    port: 24415,
-    database: 'railway'
-};
 
 // 修改路由处理，添加更多日志
 router.post('/pic', upload.array('images'), async (req, res) => {
@@ -91,7 +83,7 @@ router.post('/pic', upload.array('images'), async (req, res) => {
 
                 // 使用 CONVERT_TZ 函数在插入时转换时区
                 const [dbResult] = await connection.execute(
-                    'INSERT INTO uploaded_images (url, public_id, upload_time) VALUES (?, ?, CONVERT_TZ(NOW(), "+00:00", "+08:00"))',
+                    'INSERT INTO uploaded_images (url, public_id, upload_time) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 8 HOUR))',
                     [cloudinaryResult.secure_url, cloudinaryResult.public_id]
                 );
                 console.log('数据库保存成功, ID:', dbResult.insertId);
@@ -240,7 +232,7 @@ router.post('/files', upload.array('files'), async (req, res) => {
         const results = [];
 
         for (const file of req.files) {
-            // 检查是否是压缩文件
+            // 检查是否是压缩文
             const ext = path.extname(file.originalname).toLowerCase();
             const isCompressed = ['.rar', '.zip', '.7z', '.tar', '.gz'].includes(ext);
             
@@ -270,7 +262,7 @@ router.post('/files', upload.array('files'), async (req, res) => {
 
             // 在数据库中保存记录，保存原始文件名
             const [dbResult] = await connection.execute(
-                'INSERT INTO uploaded_files (name, url, public_id, size, upload_time) VALUES (?, ?, ?, ?, CONVERT_TZ(NOW(), "+00:00", "+08:00"))',
+                'INSERT INTO uploaded_files (name, url, public_id, size, upload_time) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 8 HOUR))',
                 [file.originalname, cloudinaryResult.url, cloudinaryResult.public_id, file.size]
             );
 
