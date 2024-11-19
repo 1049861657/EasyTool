@@ -126,31 +126,113 @@
         }
 
         .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
         }
 
         .file-item {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            background: white;
-            transition: transform 0.2s;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .file-item.loaded {
-            opacity: 1;
-            transform: translateY(0);
+            display: grid;
+            grid-template-columns: 40px 2fr 1fr 2fr 140px;
+            align-items: center;
+            padding: 10px 15px;
+            background: #fff;
+            border: none;
+            border-radius: 4px;
+            transition: all 0.2s ease;
         }
 
         .file-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background-color: #f5f9ff;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: #5c7cfa;
+        }
+
+        .file-info {
+            display: contents;
+        }
+
+        .file-name {
+            font-weight: normal;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .upload-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .file-actions {
+            justify-self: end;
+        }
+
+        .download-btn, .delete-btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            border: 1px solid transparent;
+        }
+
+        .download-btn {
+            background-color: transparent;
+            color: #1976d2;
+            border-color: #1976d2;
+        }
+
+        .download-btn:hover {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: transparent;
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .file-list-header {
+            display: grid;
+            grid-template-columns: 40px 2fr 1fr 2fr 140px;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .header-item {
+            padding: 0 10px;
+        }
+
+        .no-files {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+            background: #f8f9fa;
+            border-radius: 4px;
         }
 
         .back-button {
@@ -196,6 +278,67 @@
                 transform: translateY(0);
             }
         }
+
+        /* 加载提示样式 */
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 16px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            grid-column: 1 / -1;
+        }
+
+        /* 删除按钮状态样式 */
+        .delete-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* 文件项淡入动画 */
+        .file-item {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 修改 loading-spinner 的样式 */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;  /* 改为使用 margin 居中 */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 确保文件表格容器有相对定位 */
+        .file-table-container {
+            position: relative;
+            min-height: 200px;
+        }
     </style>
 </head>
 <body>
@@ -213,7 +356,7 @@
             </div>
             <div class="selected-files" id="selectedFilesList"></div>
             <div class="upload-hint">
-                <i>*</i> 单个文件大小不能超过 50MB
+                <i>*</i> 单个文件大小不能超过 10MB
             </div>
             <div class="upload-buttons">
                 <button id="fileUploadButton">上传文件</button>
@@ -222,6 +365,13 @@
 
         <div class="gallery">
             <h3>已上传的文件</h3>
+            <div class="file-list-header">
+                <div></div>
+                <div class="header-item">文件名</div>
+                <div class="header-item">大小</div>
+                <div class="header-item">上传时间</div>
+                <div class="header-item">操作</div>
+            </div>
             <div id="fileGrid" class="file-grid">
                 <!-- 文件列表将通过 JavaScript 动态加载 -->
             </div>

@@ -10,9 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 添加格式化时间函数
     function formatDateTime(dateString) {
-        const date = new Date(dateString);
-        // 转换为北京时间
-        date.setHours(date.getHours() + 8);
         return new Intl.DateTimeFormat('zh-CN', {
             year: 'numeric',
             month: '2-digit',
@@ -21,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             minute: '2-digit',
             second: '2-digit',
             hour12: false
-        }).format(date);
+        }).format(new Date(dateString));
     }
 
     // 添加拖放支持
@@ -127,24 +124,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 加载已上传的图片
     async function loadImages() {
+        const imageGrid = document.getElementById('imageGrid');
         try {
-            const response = await fetch(`${window.location.origin}/api/upload/images`);
+            // 先清空图片网格
+            imageGrid.innerHTML = '';
+            
+            // 添加加载动画
+            const loadingSpinner = document.createElement('div');
+            loadingSpinner.className = 'loading-spinner';
+            imageGrid.appendChild(loadingSpinner);
+
+            const response = await fetch(`${window.location.origin}/api/upload/pic`);
             const result = await response.json();
             
             if (result.success) {
-                const imageGrid = document.getElementById('imageGrid');
+                // 清空现有内容（包括加载动画）
                 imageGrid.innerHTML = '';
 
                 if (result.images && result.images.length > 0) {
-                    // 添加加载动画的容器
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.className = 'loading-message';
-                    loadingDiv.textContent = '正在加载图片...';
-                    imageGrid.appendChild(loadingDiv);
-
-                    // 分批加载图片以实现动画效果
-                    for (let i = 0; i < result.images.length; i++) {
-                        const image = result.images[i];
+                    result.images.forEach((image, index) => {
                         const imageItem = document.createElement('div');
                         imageItem.className = 'image-item fade-in';  // 添加 fade-in 类
                         imageItem.innerHTML = `
@@ -168,16 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 await deleteImage(image.id, image.public_id);
                             }
                         });
-
-                        // 延迟一小段时间再加载下一张图片
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-
-                    // 移除加载提示
-                    const loadingMessage = imageGrid.querySelector('.loading-message');
-                    if (loadingMessage) {
-                        loadingMessage.remove();
-                    }
+                    });
                 } else {
                     imageGrid.innerHTML = '<div class="no-images fade-in">暂无上传的图片</div>';
                 }
@@ -186,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('加载图片失败:', error);
-            const imageGrid = document.getElementById('imageGrid');
             imageGrid.innerHTML = '<div class="error-message fade-in">加载图片失败，请稍后重试</div>';
         }
     }
@@ -199,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             deleteBtn.classList.add('loading');
             deleteBtn.disabled = true;
 
-            const response = await fetch(`${window.location.origin}/api/upload/${id}`, {
+            const response = await fetch(`${window.location.origin}/api/upload/pic/${id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -251,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
             uploadButton.disabled = true;
             uploadButton.textContent = '上传中...';
             
-            const response = await fetch(`${window.location.origin}/api/upload`, {
+            const response = await fetch(`${window.location.origin}/api/upload/pic`, {
                 method: 'POST',
                 body: formData
             });

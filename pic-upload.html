@@ -472,6 +472,38 @@
             gap: 20px;
             margin-bottom: 20px;
         }
+
+        /* 添加到现有样式中 */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            margin: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* 确保 image-grid 有相对定位，这样加载动画可以相对它定位 */
+        .image-grid {
+            position: relative;
+            min-height: 200px;  /* 给一个最小高度，确保有空间显示加载动画 */
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
