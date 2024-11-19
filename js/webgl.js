@@ -258,11 +258,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function openWebGL() {
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isGitHub = window.location.hostname.includes('github.io');
+    const isRender = window.location.hostname.includes('onrender.com');
     
-    if (isLocalhost) {
-        window.open('http://localhost:8080/webgl', '_blank');
-    } else {
+    if (isGitHub) {
         window.open(`${window.location.origin}/EasyTool/packaged_Navigation`, '_blank');
+    } else if (isRender) {
+        window.open(`${window.location.origin}/webgl`, '_blank');
+    } else {
+        // 本地环境
+        window.open('http://localhost:8080/webgl', '_blank');
     }
 } 
