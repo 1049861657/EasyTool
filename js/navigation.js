@@ -22,6 +22,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 如果是 WebGL 页面，检查环境支持
                 if (hash === 'webgl') {
                     console.log('WebGL页面加载开始');
+                    // 检查是否在 Render 环境
+                    if (window.location.hostname.includes('onrender.com')) {
+                        // 直接跳转到 /webgl 路由
+                        window.location.href = '/webgl';
+                        return;
+                    }
+                    // GitHub Pages 环境下的原有逻辑
                     try {
                         const canvas = document.getElementById('glcanvas');
                         if (!canvas) {
@@ -36,9 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
 
                         console.log('WebGL 上下文创建成功:', gl);
-                        // 这里可以添加更多 WebGL 初始化的调试信息
                         
-                        // 检查是否成功加载了 gl-matrix
                         if (typeof glMatrix === 'undefined') {
                             console.error('gl-matrix 库未加载');
                             return;
@@ -62,24 +67,24 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const page = link.getAttribute('data-page');
 
-            // 移除所有活动状态
+            // 如果是 WebGL 页面且在 Render 环境下
+            if (page === 'webgl' && window.location.hostname.includes('onrender.com')) {
+                window.location.href = '/webgl';
+                return;
+            }
+
+            // 其他页面的正常处理
             navLinks.forEach(l => l.classList.remove('active'));
             pages.forEach(p => p.classList.remove('active'));
             
-            // 设置当前页面为活动状态
             link.classList.add('active');
             const pageId = page + '-page';
             const targetPage = document.getElementById(pageId);
             
             if (targetPage) {
                 targetPage.classList.add('active');
-                // 如果是 WebGL 页面，添加调试信息
-                if (page === 'webgl') {
-                    console.log('通过点击加载 WebGL 页面');
-                }
             }
 
-            // 更新 URL hash
             window.location.hash = page;
         });
     });
