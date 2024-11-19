@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 处理 URL hash
     function handleHash() {
-        const hash = window.location.hash.slice(1); // 移除 '#' 符号
+        const hash = window.location.hash.slice(1);
         if (hash) {
             // 移除所有活动状态
             navLinks.forEach(l => l.classList.remove('active'));
@@ -14,48 +14,73 @@ document.addEventListener('DOMContentLoaded', function() {
             // 设置当前页面为活动状态
             const link = document.querySelector(`.nav-link[data-page="${hash}"]`);
             const page = document.getElementById(`${hash}-page`);
+            
             if (link && page) {
                 link.classList.add('active');
                 page.classList.add('active');
+
+                // 如果是 WebGL 页面，检查环境支持
+                if (hash === 'webgl') {
+                    console.log('WebGL页面加载开始');
+                    try {
+                        const canvas = document.getElementById('glcanvas');
+                        if (!canvas) {
+                            console.error('找不到 WebGL canvas 元素');
+                            return;
+                        }
+
+                        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                        if (!gl) {
+                            console.error('无法初始化 WebGL');
+                            return;
+                        }
+
+                        console.log('WebGL 上下文创建成功:', gl);
+                        // 这里可以添加更多 WebGL 初始化的调试信息
+                        
+                        // 检查是否成功加载了 gl-matrix
+                        if (typeof glMatrix === 'undefined') {
+                            console.error('gl-matrix 库未加载');
+                            return;
+                        }
+                        console.log('gl-matrix 库加载成功');
+
+                    } catch (error) {
+                        console.error('WebGL 初始化错误:', error);
+                    }
+                }
             }
         }
     }
 
     // 页面加载和 hash 变化时处理
     window.addEventListener('hashchange', handleHash);
-    handleHash(); // 初始加载时处理
+    handleHash();
 
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            
+            const page = link.getAttribute('data-page');
+
             // 移除所有活动状态
             navLinks.forEach(l => l.classList.remove('active'));
             pages.forEach(p => p.classList.remove('active'));
             
             // 设置当前页面为活动状态
             link.classList.add('active');
-            const pageId = link.getAttribute('data-page') + '-page';
-            document.getElementById(pageId).classList.add('active');
+            const pageId = page + '-page';
+            const targetPage = document.getElementById(pageId);
+            
+            if (targetPage) {
+                targetPage.classList.add('active');
+                // 如果是 WebGL 页面，添加调试信息
+                if (page === 'webgl') {
+                    console.log('通过点击加载 WebGL 页面');
+                }
+            }
 
             // 更新 URL hash
-            window.location.hash = link.getAttribute('data-page');
-        });
-    });
-
-    // 上传页面的标签切换逻辑
-    const uploadTabs = document.querySelectorAll('.upload-tabs .tab-btn');
-    
-    uploadTabs.forEach(btn => {
-        btn.addEventListener('click', function() {
-            // 移除所有活动状态
-            uploadTabs.forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-            
-            // 设置当前标签为活动状态
-            this.classList.add('active');
-            const target = this.getAttribute('data-target');
-            document.getElementById(target).classList.add('active');
+            window.location.hash = page;
         });
     });
 }); 
