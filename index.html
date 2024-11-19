@@ -879,11 +879,72 @@
             margin: 20px;
         }
 
-        .preview-container {
-            width: 200px;
-            height: 200px;
-            border: 2px dashed #ccc;
-            margin: 10px 0;
+        /* 上传页面样式 */
+        .upload-header {
+            padding: 20px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .upload-header h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .upload-nav {
+            display: flex;
+            gap: 50px;
+            padding: 50px;
+            justify-content: center;
+        }
+
+        .upload-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 30px 60px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 22px;
+            background-color: #f8f9fa;
+            border: 2px solid #e0e0e0;
+        }
+
+        .nav-icon {
+            font-size: 32px;
+        }
+
+        .upload-nav-item:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border-color: #1976d2;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(25, 118, 210, 0.2);
+        }
+
+        /* 移除 active 相关的样式，因为不再需要 */
+        /* .upload-nav-item.active {
+            background-color: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        .upload-nav-item.active:hover {
+            background-color: #1565c0;
+            color: white;
+        } */
+
+        /* 确保上传页面容器足够宽 */
+        #upload-page .calculator {
+            max-width: 1200px;
+            width: 95%;
+            margin: 30px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -896,7 +957,7 @@
         <a href="#" class="nav-link" data-page="webgl">锚链计算</a>
         <a href="#" class="nav-link" data-page="database">数据库查看</a>
         <a href="#" class="nav-link" data-page="request">GET请求</a>
-        <a href="#" class="nav-link" data-page="upload">上传图片</a>
+        <a href="#" class="nav-link" data-page="upload">文件上传</a>
         <div class="version-info">v1.0.3</div>
     </div>
 
@@ -975,7 +1036,7 @@
             
             <!-- 度分秒转小数 -->
             <div class="converter-section">
-                <h3>度分秒 → 小数格式</h3>
+                <h3>度秒 → 小数格式</h3>
                 <div class="coordinates-input-group">
                     <div class="dms-input">
                         <input type="number" id="degrees" placeholder="度" min="-180" max="180">°
@@ -1045,7 +1106,7 @@
                 <div class="db-header">
                     <h3>数据库连接</h3>
                     <span class="toggle-icon">▼</span>
-                </div>后端托管平台
+                </div>
                 <div class="db-connection-form">
                     <div class="input-group">
                         <div class="input-field">
@@ -1116,12 +1177,28 @@
         <div class="request-tool">
             <h2>GET请求测试工具</h2>
             <div class="url-input-group">
-                <input type="text" id="request-url" placeholder="请输入URL（例如：https://api.example.com/data）">
+                <input type="text" id="request-url" placeholder="请输入URL（例如：https://httpbin.org/get）">
             </div>
             <textarea id="response-result" class="response-area" readonly placeholder="响应结果将显示在这里..."></textarea>
             <div class="button-group">
                 <button class="request-btn" id="send-request-btn">发送请求</button>
                 <button class="clear-btn" id="clear-request-btn">清除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传页面 -->
+    <div id="upload-page" class="page">
+        <div class="calculator">
+            <div class="upload-nav">
+                <a href="pic-upload.html" class="upload-nav-item">
+                    <i class="nav-icon">🖼️</i>
+                    <span>图片上传</span>
+                </a>
+                <a href="file-upload.html" class="upload-nav-item">
+                    <i class="nav-icon">📁</i>
+                    <span>文件上传</span>
+                </a>
             </div>
         </div>
     </div>

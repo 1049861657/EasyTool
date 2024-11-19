@@ -258,11 +258,11 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function openWebGL() {
-    const isGitHubPages = window.location.hostname.includes('github.io');
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
-    if (isGitHubPages) {
-        window.open(`${window.location.origin}/EasyTool/packaged_Navigation`, '_blank');
-    } else {
+    if (isLocalhost) {
         window.open('http://localhost:8080/webgl', '_blank');
+    } else {
+        window.open(`${window.location.origin}/EasyTool/packaged_Navigation`, '_blank');
     }
 } 

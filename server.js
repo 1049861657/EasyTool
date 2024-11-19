@@ -78,8 +78,12 @@ app.use((err, req, res, next) => {
     });
 });
 
-const port = 8080;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
-    console.log(`服务器运行在 http://localhost:${port}`);
-    console.log(`WebGL页面在 http://localhost:${port}/webgl`);
+    if (process.env.NODE_ENV === 'production') {
+        console.log(`服务器已启动`);
+    } else {
+        console.log(`服务器运行在 http://localhost:${port}`);
+        console.log(`WebGL页面在 http://localhost:${port}/webgl`);
+    }
 }); 
