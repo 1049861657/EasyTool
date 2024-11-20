@@ -1,3 +1,5 @@
+import { formatDate } from '../utils/dateFormat.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const imageInput = document.getElementById('imageInput');
     const previewArea = document.getElementById('previewArea');
@@ -6,19 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!imageInput || !previewArea || !uploadButton) {
         console.error('必要的DOM元素未找到');
         return;
-    }
-
-    // 添加格式化时间函数
-    function formatDateTime(dateString) {
-        return new Intl.DateTimeFormat('zh-CN', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        }).format(new Date(dateString));
     }
 
     // 添加拖放支持
@@ -149,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <a href="${image.url}" target="_blank" class="image-link">
                                 <img src="${image.url}" alt="上传的图片" onload="this.parentElement.parentElement.classList.add('loaded')">
                                 <div class="image-info">
-                                    <div>上传时间: ${formatDateTime(image.upload_time)}</div>
+                                    <div>上传时间: ${formatDate(image.upload_time)}</div>
                                     <div class="click-hint">点击查看原图</div>
                                 </div>
                             </a>

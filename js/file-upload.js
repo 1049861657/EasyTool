@@ -1,3 +1,5 @@
+import { formatDate } from '../utils/dateFormat.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const fileUploadButton = document.getElementById('fileUploadButton');
@@ -44,38 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
             fileSpan.textContent = `${file.name} (${formatFileSize(file.size)})`;
             selectedFiles.appendChild(fileSpan);
         });
-    }
-
-    // 修改格式化时间函数
-    function formatDateTime(dateString) {
-        try {
-            // 检查是否是有效的日期字符串
-            if (!dateString) {
-                throw new Error('Invalid date');
-            }
-
-            // 尝试直接创建日期对象
-            const date = new Date(dateString);
-            
-            // 检查是否是有效日期
-            if (isNaN(date.getTime())) {
-                throw new Error('Invalid date');
-            }
-
-            return new Intl.DateTimeFormat('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-                timeZone: 'Asia/Shanghai'  // 明确指定使用东八区
-            }).format(date);
-        } catch (error) {
-            console.error('日期格式化错误:', error);
-            return '时间格式错误';  // 返回一个默认值而不是抛出错误
-        }
     }
 
     // 格式化文件大小
@@ -189,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="file-icon">${getFileIcon(file.name)}</div>
                             <div class="file-name">${file.name}</div>
                             <div class="file-size">${formatFileSize(file.size)}</div>
-                            <div class="upload-time">${formatDateTime(file.upload_time)}</div>
+                            <div class="upload-time">${formatDate(file.upload_time)}</div>
                             <div class="file-actions">
                                 <button class="download-btn" onclick="downloadFile('${file.public_id}', '${file.name}')">下载</button>
                                 <button class="delete-btn" data-id="${file.id}">删除</button>

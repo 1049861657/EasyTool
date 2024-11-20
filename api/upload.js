@@ -5,8 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import mysql from 'mysql2/promise';
-import { dbConfig } from '../config/database.js';
+import { createConnection } from '../utils/db.js';
 
 const router = Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +23,6 @@ const storage = multer.diskStorage({
         cb(null, uploadDir)
     },
     filename: function (req, file, cb) {
-        // 解码原始文件名
         const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(originalName));
@@ -34,7 +32,6 @@ const storage = multer.diskStorage({
 const upload = multer({ 
     storage: storage,
     fileFilter: function (req, file, cb) {
-        // 解码原始文件名
         file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
         cb(null, true);
     }
@@ -56,7 +53,7 @@ router.post('/pic', upload.array('images'), async (req, res) => {
 
         console.log(`接收到 ${req.files.length} 个文件`);
 
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
         console.log('数据库连接成功');
         
         const results = [];
@@ -83,7 +80,7 @@ router.post('/pic', upload.array('images'), async (req, res) => {
 
                 // 使用 CONVERT_TZ 函数在插入时转换时区
                 const [dbResult] = await connection.execute(
-                    'INSERT INTO uploaded_images (url, public_id, upload_time) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 8 HOUR))',
+                    'INSERT INTO uploaded_images (url, public_id, upload_time) VALUES (?, ?, CONVERT_TZ(NOW(), @@session.time_zone, "+08:00"))',
                     [cloudinaryResult.secure_url, cloudinaryResult.public_id]
                 );
                 console.log('数据库保存成功, ID:', dbResult.insertId);
@@ -126,7 +123,7 @@ router.post('/pic', upload.array('images'), async (req, res) => {
 router.get('/pic', async (req, res) => {
     let connection;
     try {
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
 
         // 确保图片表存在
         await connection.execute(`
@@ -134,13 +131,19 @@ router.get('/pic', async (req, res) => {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 url VARCHAR(255) NOT NULL,
                 public_id VARCHAR(100) NOT NULL,
-                upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                upload_time DATETIME NOT NULL
             )
         `);
 
-        const [rows] = await connection.execute(
-            'SELECT * FROM uploaded_images ORDER BY upload_time DESC'
-        );
+        const [rows] = await connection.execute(`
+            SELECT 
+                id, 
+                url, 
+                public_id,
+                DATE_FORMAT(upload_time, '%Y-%m-%d %H:%i:%s') as upload_time 
+            FROM uploaded_images 
+            ORDER BY upload_time DESC
+        `);
 
         res.json({
             success: true,
@@ -188,7 +191,7 @@ router.delete('/pic/:id', async (req, res) => {
 
         // 从数据库删除记录
         console.log('从数据库删除记录...');
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
         const [deleteResult] = await connection.execute(
             'DELETE FROM uploaded_images WHERE id = ?',
             [id]
@@ -228,7 +231,7 @@ router.post('/files', upload.array('files'), async (req, res) => {
             });
         }
 
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
         const results = [];
 
         for (const file of req.files) {
@@ -262,7 +265,7 @@ router.post('/files', upload.array('files'), async (req, res) => {
 
             // 在数据库中保存记录，保存原始文件名
             const [dbResult] = await connection.execute(
-                'INSERT INTO uploaded_files (name, url, public_id, size, upload_time) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL 8 HOUR))',
+                'INSERT INTO uploaded_files (name, url, public_id, size, upload_time) VALUES (?, ?, ?, ?, CONVERT_TZ(NOW(), @@session.time_zone, "+08:00"))',
                 [file.originalname, cloudinaryResult.url, cloudinaryResult.public_id, file.size]
             );
 
@@ -296,7 +299,7 @@ router.post('/files', upload.array('files'), async (req, res) => {
 router.get('/files', async (req, res) => {
     let connection;
     try {
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
 
         // 确保文件表存在
         await connection.execute(`
@@ -306,13 +309,21 @@ router.get('/files', async (req, res) => {
                 url VARCHAR(255) NOT NULL,
                 public_id VARCHAR(100) NOT NULL,
                 size BIGINT NOT NULL,
-                upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                upload_time DATETIME NOT NULL
             )
         `);
 
-        const [rows] = await connection.execute(
-            'SELECT * FROM uploaded_files ORDER BY upload_time DESC'
-        );
+        const [rows] = await connection.execute(`
+            SELECT 
+                id, 
+                name,
+                url, 
+                public_id,
+                size,
+                DATE_FORMAT(upload_time, '%Y-%m-%d %H:%i:%s') as upload_time 
+            FROM uploaded_files 
+            ORDER BY upload_time DESC
+        `);
 
         res.json({
             success: true,
@@ -334,7 +345,7 @@ router.delete('/files/:id', async (req, res) => {
     let connection;
     try {
         const { id } = req.params;
-        connection = await mysql.createConnection(dbConfig);
+        connection = await createConnection();
 
         // 获取文件信息
         const [files] = await connection.execute(

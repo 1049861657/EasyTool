@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import multer from 'multer';
 import cloudinary from 'cloudinary';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
