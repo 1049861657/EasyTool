@@ -1,5 +1,87 @@
 import { formatDate } from '../utils/dateFormat.js';
 
+// 将 downloadFile 函数暴露到全局作用域
+window.downloadFile = async function(publicId, fileName) {
+    try {
+        const downloadBtn = document.querySelector(`.download-btn[onclick*="${publicId}"]`);
+        if (downloadBtn) {
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = '下载中...';
+        }
+
+        const ext = fileName.toLowerCase().split('.').pop();
+        const isCompressed = ['rar', 'zip', '7z', 'tar', 'gz'].includes(ext);
+
+        const response = await fetch('/api/upload/download', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                public_id: publicId,
+                file_name: fileName
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`下载失败: ${response.status}`);
+        }
+
+        // 对于 txt 文件使用 blob 下载
+        if (ext === 'txt') {
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } else {
+            // 对于压缩文件，下载并重命名
+            const result = await response.json();
+            if (result.success) {
+                // 创建一个隐藏的 iframe 来处理下载
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                // 监听 iframe 加载完成事件
+                iframe.onload = () => {
+                    document.body.removeChild(iframe);
+                };
+
+                // 如果是压缩文件，设置正确的文件名（移除.1后缀）
+                if (isCompressed) {
+                    const link = document.createElement('a');
+                    link.href = result.url;
+                    link.download = fileName; // 使用原始文件名
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    // 非压缩文件直接在新窗口打开
+                    window.open(result.url, '_blank');
+                }
+            } else {
+                throw new Error(result.message || '下载失败');
+            }
+        }
+
+    } catch (error) {
+        console.error('下载错误:', error);
+        alert(`下载失败: ${error.message}`);
+    } finally {
+        // 恢复按钮状态
+        const downloadBtn = document.querySelector(`.download-btn[onclick*="${publicId}"]`);
+        if (downloadBtn) {
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = '下载';
+        }
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const fileUploadButton = document.getElementById('fileUploadButton');
@@ -240,86 +322,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 面加载时加载文件列表
     loadFiles();
-});
-
-// 修改下载处理函数
-async function downloadFile(publicId, fileName) {
-    try {
-        const downloadBtn = document.querySelector(`.download-btn[onclick*="${publicId}"]`);
-        if (downloadBtn) {
-            downloadBtn.disabled = true;
-            downloadBtn.textContent = '下载中...';
-        }
-
-        const ext = fileName.toLowerCase().split('.').pop();
-        const isCompressed = ['rar', 'zip', '7z', 'tar', 'gz'].includes(ext);
-
-        const response = await fetch('/api/upload/download', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                public_id: publicId,
-                file_name: fileName
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`下载失败: ${response.status}`);
-        }
-
-        // 对于 txt 文件使用 blob 下载
-        if (ext === 'txt') {
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        } else {
-            // 对于压缩文件，下载并重命名
-            const result = await response.json();
-            if (result.success) {
-                // 创建一个隐藏的 iframe 来处理下载
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                // 监听 iframe 加载完成事件
-                iframe.onload = () => {
-                    document.body.removeChild(iframe);
-                };
-
-                // 如果是压缩文件，设置正确的文件名（移除.1后缀）
-                if (isCompressed) {
-                    const link = document.createElement('a');
-                    link.href = result.url;
-                    link.download = fileName; // 使用原始文件名
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    // 非压缩文件直接在新窗口打开
-                    window.open(result.url, '_blank');
-                }
-            } else {
-                throw new Error(result.message || '下载失败');
-            }
-        }
-
-    } catch (error) {
-        console.error('下载错误:', error);
-        alert(`下载失败: ${error.message}`);
-    } finally {
-        // 恢复按钮状态
-        const downloadBtn = document.querySelector(`.download-btn[onclick*="${publicId}"]`);
-        if (downloadBtn) {
-            downloadBtn.disabled = false;
-            downloadBtn.textContent = '下载';
-        }
-    }
-} 
+}); 

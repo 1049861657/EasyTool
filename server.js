@@ -7,6 +7,7 @@ import { dirname } from 'path';
 import multer from 'multer';
 import cloudinary from 'cloudinary';
 import dotenv from 'dotenv';
+import { promises as fs } from 'fs';
 
 dotenv.config();
 
@@ -45,13 +46,16 @@ app.use((req, res, next) => {
 import * as database from './routes/database.js';
 import proxyRouter from './routes/proxy.js';
 import uploadRouter from './api/upload.js';
+import cardsRouter from './routes/cards.js';
 
 // API 路由注册（放在最前面）
 app.use('/api/database', database.router);
 app.use('/api/proxy', proxyRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/cards', cardsRouter);
 
 // 静态文件服务
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 app.use('/Build', express.static(path.join(__dirname, 'packaged_Navigation/Build')));
 app.use('/TemplateData', express.static(path.join(__dirname, 'packaged_Navigation/TemplateData')));
@@ -89,4 +93,5 @@ app.listen(port, () => {
         console.log(`服务器运行在 http://localhost:${port}`);
         console.log(`WebGL页面在 http://localhost:${port}/webgl`);
     }
-}); 
+});
+  

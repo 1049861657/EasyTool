@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>在线工具箱</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* 导航栏样式 */
         .nav-bar {
@@ -385,12 +386,12 @@
             color: #1a1a1a;
         }
 
-        /* 结果容器悬浮效果 */
+        /* 结果容器悬浮效 */
         .result-container:hover {
             background-color: #f1f3f5;
         }
 
-        /* 经纬度转换器样式 */
+        /* 经纬度转换样式 */
         .coordinates-converter {
             max-width: 500px !important;
         }
@@ -845,7 +846,7 @@
             display: block;
         }
 
-        /* 添加连接表单的过渡动画 */
+        /* 加连接表单的过渡动画 */
         .db-connection-form {
             transition: all 0.3s ease;
             overflow: hidden;
@@ -925,18 +926,6 @@
             box-shadow: 0 6px 15px rgba(25, 118, 210, 0.2);
         }
 
-        /* 移除 active 相关的样式，因为不再需要 */
-        /* .upload-nav-item.active {
-            background-color: #1976d2;
-            color: white;
-            border-color: #1976d2;
-        }
-
-        .upload-nav-item.active:hover {
-            background-color: #1565c0;
-            color: white;
-        } */
-
         /* 确保上传页面容器足够宽 */
         #upload-page .calculator {
             max-width: 1200px;
@@ -946,6 +935,51 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+
+        #result {
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #result img {
+            max-width: 200px;
+            margin-top: 20px;
+        }
+
+        /* 抽卡提示框样式 */
+        #draw-toast {
+            visibility: hidden;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px 32px;
+            z-index: 1000;
+            font-size: 1.2em;
+        }
+
+        #draw-toast.show {
+            visibility: visible;
+            animation: fadeIn 0.5s, fadeOut 0.5s 1.5s;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes fadeOut {
+            from {opacity: 1;}
+            to {opacity: 0;}
+        }
+
     </style>
 </head>
 <body>
@@ -958,7 +992,8 @@
         <a href="#" class="nav-link" data-page="database">数据库查看</a>
         <a href="#" class="nav-link" data-page="request">GET请求</a>
         <a href="#" class="nav-link" data-page="upload">文件上传</a>
-        <div class="version-info">v1.0.4</div>
+        <a href="#" class="nav-link" data-page="card-draw">抽卡模拟器</a>
+        <div class="version-info">v1.05</div>
     </div>
 
     <!-- 计算器页面 -->
@@ -976,7 +1011,7 @@
                     </select>
                     <input type="number" id="num2" placeholder="输入数字">
                 </div>
-                <button class="calc-btn" onclick="calculate()">计算</button>
+                <button class="calc-btn" onclick="calculate()">算</button>
                 <div class="result-display">
                     <span class="result-label">结果：</span>
                     <span id="result" class="result-value">-</span>
@@ -1056,9 +1091,9 @@
                 </div>
             </div>
 
-            <!-- 小数转度分秒 -->
+            <!-- 小数转分秒 -->
             <div class="converter-section">
-                <h3>小数格式 → 度分秒</h3>
+                <h3>小数式 → 度分秒</h3>
                 <div class="coordinates-input-group">
                     <input type="number" id="decimal-degrees" placeholder="请输入小数格式经纬度" step="0.000001">
                     <button class="convert-btn" onclick="decimalToDms()">转换</button>
@@ -1141,7 +1176,7 @@
             <div id="table-section" class="db-section" style="display: none;">
                 <div class="table-header">
                     <select id="table-select">
-                        <option value="">选择数据表</option>
+                        <option value="">选数据表</option>
                     </select>
                 </div>
                 <div class="table-container">
@@ -1172,7 +1207,7 @@
         </div>
     </div>
 
-    <!-- GET请求工具页面 -->
+    <!-- GET请求具页面 -->
     <div id="request-page" class="page">
         <div class="request-tool">
             <h2>GET请求测试工具</h2>
@@ -1203,6 +1238,56 @@
         </div>
     </div>
 
+    <!-- 抽卡模拟器页面 -->
+    <div id="card-draw-page" class="page">
+        <!-- 添加提示框元素 -->
+        <div id="draw-toast"></div>
+        
+        <div class="draw-container">
+            <!-- 左侧抽卡区域 -->
+            <div class="calculator">
+                <div class="title-container">
+                    <h2>抽卡模拟器</h2>
+                    <div class="info-icon" id="infoIcon">ⓘ</div>
+                    <div class="tooltip" id="tooltipBox">
+                        <p>规则：</p>
+                        <ul>
+                            <li>5星出货率: 8%</li>
+                            <li>4星出货率: 20%</li>
+                            <li>3星出货率: 30%</li>
+                            <li>1,2星合计出货率: 40%</li>
+                            <li>保底机制: 50抽后每次抽取增加六星2%概率</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="draw-buttons">
+                    <button class="calc-btn" onclick="drawCard()">单抽</button>
+                    <button class="calc-btn ten-draw" onclick="drawTenCards()">十连抽</button>
+                </div>
+                <div id="draw-result" class="result-display"></div>
+            </div>
+            
+            <!-- 右侧抽卡记录 -->
+            <div class="draw-history">
+                <h2>抽卡记录</h2>
+                <div class="history-list">
+                    <!-- 记录将通过 JavaScript 动态添加 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 至臻画廊部分保持不变 -->
+        <div class="calculator">
+            <h2>至臻画廊</h2>
+            <div class="card-gallery">
+                <div class="scroll-container">
+                    <div class="scroll-content">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
     <script src="js/utils.js"></script>
@@ -1212,6 +1297,7 @@
     <script src="js/coordinates.js"></script>
     <script src="js/webgl.js"></script>
     <script src="js/database.js"></script>
+    <script src="js/card-draw.js"></script>
     <script type="module">
         import ProxyRequest from './js/proxyRequest.js';
 
@@ -1232,7 +1318,7 @@
             }
 
             if (clearButton) {
-                console.log('找到清除按钮，绑定点击事件');
+                console.log('到清除按钮，绑定点击事件');
                 clearButton.addEventListener('click', () => ProxyRequest.clearUI());
             }
         }
