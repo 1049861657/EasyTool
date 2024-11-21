@@ -6,18 +6,7 @@ function getBasePath() {
 
     // 如果是直接打开HTML文件
     if (protocol === 'file:') {
-        // 从pathname中提取基础路径
-        const pathParts = pathname.split('/');
-        const indexPosition = pathParts.findIndex(part => part === 'index.html');
-        if (indexPosition !== -1) {
-            return pathParts.slice(0, indexPosition).join('/') + '/';
-        }
-        return '';
-    }
-
-    // 如果是通过服务器访问
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return '/'; // 本地服务器
+        return 'index.html';
     }
 
     // GitHub Pages
@@ -25,9 +14,8 @@ function getBasePath() {
         return '/EasyTool/';
     }
 
-    // Vercel 或其他部署
-    const basePath = pathname.split('/')[1];
-    return basePath ? `/${basePath}/` : '/';
+    //其他部署
+    return '/';
 }
 
 // 页面模块初始化映射
@@ -40,13 +28,6 @@ const pageInitializers = {
                 console.error('初始化抽卡模拟器失败:', error);
             }
         }
-    },
-    // 可以添加其他页面的初始化函数
-    'calculator': () => {
-        // 计算器页面的初始化逻辑
-    },
-    'timestamp': () => {
-        // 时间戳页面的初始化逻辑
     }
     // ... 其他页面的初始化器
 };
@@ -54,7 +35,10 @@ const pageInitializers = {
 // 处理返回主页的函数
 function handleReturn(returnPath) {
     const basePath = getBasePath();
-    window.location.href = `${basePath}index.html${returnPath ? '#' + returnPath : ''}`;
+    console.log(basePath)
+    console.log(`${basePath}index.html${returnPath ? '#' + returnPath : ''}`)
+    console.log(`${basePath}${returnPath ? '#' + returnPath : ''}`)
+    window.location.href = `${basePath}${returnPath ? '#' + returnPath : ''}`;
 }
 
 

@@ -31,5 +31,19 @@ function calculate() {
     // 处理小数点后过多位数的情况
     result = Math.round(result * 1000000) / 1000000;
     
-    document.getElementById('result').textContent = result;
+    const resultElement = document.getElementById('result');
+    resultElement.textContent = result;
+    
+    // 添加适当的类名
+    resultElement.className = 'result-value update';
+    if (result < 0) {
+        resultElement.classList.add('negative');
+    } else if (result === 0) {
+        resultElement.classList.add('zero');
+    }
+    
+    // 移除动画类，以便下次可以再次触发
+    setTimeout(() => {
+        resultElement.classList.remove('update');
+    }, 300);
 } 
