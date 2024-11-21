@@ -45,16 +45,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         drawHistory.appendChild(statsDiv);
     }
 
-    // 添加十连抽按钮（使用已有的按钮引用）
-    const singleDrawBtn = document.querySelector('.calc-btn');
-    if (singleDrawBtn) {
-        const tenDrawButton = document.createElement('button');
-        tenDrawButton.className = 'calc-btn ten-draw';
-        tenDrawButton.textContent = '十连抽';
-        tenDrawButton.onclick = drawTenCards;
-        singleDrawBtn.parentNode.insertBefore(tenDrawButton, singleDrawBtn.nextSibling);
-    }
-
     const infoIcon = document.getElementById('infoIcon');
     const tooltipBox = document.getElementById('tooltipBox');
     let tooltipTimeout;
@@ -62,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     infoIcon.addEventListener('mouseenter', () => {
         tooltipTimeout = setTimeout(() => {
             tooltipBox.classList.add('show');
-        }, 300); // 缩短到300ms
+        }, 300);
     });
 
     infoIcon.addEventListener('mouseleave', () => {
