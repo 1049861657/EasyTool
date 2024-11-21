@@ -6,6 +6,83 @@ let drawsSinceLast6Star = 0;
 let drawHistoryCurrentPage = 1;
 const drawHistoryPageSize = 10;
 
+// // 修改初始化函数
+// document.addEventListener('DOMContentLoaded', function() {
+//     // 监听导航点击事件
+//     const navLinks = document.querySelectorAll('.nav-link');
+//     navLinks.forEach(link => {
+//         link.addEventListener('click', async function(e) {
+//             if (this.dataset.page === 'card-draw') {
+//                 // 等待一小段时间确保页面已切换
+//                 setTimeout(async () => {
+//                     try {
+//                         await initializeCardDraw();
+//                     } catch (error) {
+//                         console.error('初始化抽卡模拟器失败:', error);
+//                     }
+//                 }, 100);
+//             }
+//         });
+//     });
+
+//     // 如果当前页面就是抽卡页面，立即初始化
+//     if (window.location.hash === '#card-draw' || 
+//         document.querySelector('.page.active')?.id === 'card-draw-page') {
+//         initializeCardDraw();
+//     }
+// });
+
+// 将初始化逻辑抽取为单独的函数
+async function initializeCardDraw() {
+    console.log('开始初始化抽卡模拟器...');
+    
+    // 检查是否已经初始化过
+    if (window.cards) {
+        console.log('卡片数据已加载，跳过初始化');
+        return;
+    }
+
+    try {
+        // 等待卡片加载完成
+        await loadCards();
+        
+        // 添加统计信息容器
+        const drawHistory = document.querySelector('.draw-history');
+        if (drawHistory && !drawHistory.querySelector('.stats-info')) {
+            const statsDiv = document.createElement('div');
+            statsDiv.className = 'stats-info';
+            statsDiv.innerHTML = '平均<span class="highlight">∞</span>抽出6星';
+            drawHistory.appendChild(statsDiv);
+        }
+
+        const infoIcon = document.getElementById('infoIcon');
+        const tooltipBox = document.getElementById('tooltipBox');
+        
+        if (infoIcon && tooltipBox) {
+            // 移除可能存在的旧事件监听器
+            const newInfoIcon = infoIcon.cloneNode(true);
+            infoIcon.parentNode.replaceChild(newInfoIcon, infoIcon);
+            
+            let tooltipTimeout;
+            
+            newInfoIcon.addEventListener('mouseenter', () => {
+                tooltipTimeout = setTimeout(() => {
+                    tooltipBox.classList.add('show');
+                }, 300);
+            });
+
+            newInfoIcon.addEventListener('mouseleave', () => {
+                clearTimeout(tooltipTimeout);
+                tooltipBox.classList.remove('show');
+            });
+        }
+
+        console.log('抽卡模拟器初始化完成');
+    } catch (error) {
+        console.error('初始化失败:', error);
+    }
+}
+
 // 添加卡片加载函数
 async function loadCards() {
     try {
@@ -26,47 +103,14 @@ async function loadCards() {
         return result.cards;
     } catch (error) {
         console.error('加载卡片失败:', error);
-        alert('加载卡片失败，请刷新页面重试');
+        // 只在抽卡页面显示错误提示
+        if (document.querySelector('.page.active')?.id === 'card-draw-page') {
+            alert('加载卡片失败，请刷新页面重试');
+        }
         return [];
     }
 }
 
-// 修改初始化函数
-document.addEventListener('DOMContentLoaded', async function() {
-    // 等待卡片加载完成
-    await loadCards();
-    
-    // 添加统计信息容器
-    const drawHistory = document.querySelector('.draw-history');
-    if (drawHistory) {
-        const statsDiv = document.createElement('div');
-        statsDiv.className = 'stats-info';
-        statsDiv.innerHTML = '平均<span class="highlight">∞</span>抽出6星';
-        drawHistory.appendChild(statsDiv);
-    }
-
-    const infoIcon = document.getElementById('infoIcon');
-    const tooltipBox = document.getElementById('tooltipBox');
-    let tooltipTimeout;
-
-    infoIcon.addEventListener('mouseenter', () => {
-        tooltipTimeout = setTimeout(() => {
-            tooltipBox.classList.add('show');
-        }, 300);
-    });
-
-    infoIcon.addEventListener('mouseleave', () => {
-        clearTimeout(tooltipTimeout);
-        tooltipBox.classList.remove('show');
-    });
-
-    // 点击其他地方关闭提示框
-    document.addEventListener('click', (e) => {
-        if (!tooltipBox.contains(e.target) && !infoIcon.contains(e.target)) {
-            tooltipBox.classList.remove('show');
-        }
-    });
-});
 // 修改抽卡函数
 function drawCard() {
     if (!window.cards || !window.highStarCards) {
