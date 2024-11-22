@@ -530,6 +530,7 @@
     display: flex;
     gap: 15px;
     justify-content: center;
+    align-items: flex-end; /* 确保按钮底部对齐 */
     margin-bottom: 20px;
 }
 
@@ -541,22 +542,24 @@
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s;
-    background-color: #3498db;
+    background-color: #3498db;  /* 蓝色背景 */
     color: white;
 }
 
-/* 十连抽按钮特殊样式 */
-.calc-btn.ten-draw {
-    background-color: #e74c3c;
+/* 十连抽按钮特殊样式 - 修改禁用状态样式 */
+.calc-btn.ten-draw:disabled,
+.calc-btn.ten-draw.disabled {
+    background-color: #ccc;  /* 灰色背景 */
+    color: #666;  /* 深灰色文字 */
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
-.calc-btn:hover {
+/* 所有按钮的悬停效果 - 确保禁用状态下没有悬停效果 */
+.calc-btn:not(:disabled):hover {
+    background-color: #2980b9;  /* 深蓝色 */
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.calc-btn.ten-draw:hover {
-    background-color: #c0392b;
 }
 
 .card-results.multi-draw {
@@ -760,3 +763,117 @@
 .result-value.update {
     animation: resultUpdate 0.3s ease;
 }
+
+/* 修改激活码容器样式 */
+.activation-code-container {
+    position: absolute;
+    left: 20px;
+    top: 120px;
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    background: transparent;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+}
+
+.activation-code-container input {
+    width: 120px;
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    font-size: 13px;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.activation-code-container input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.activation-code-container input::placeholder {
+    color: #999;
+    font-size: 12px;
+}
+
+.activation-code-container button {
+    padding: 6px 15px;
+    background: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    height: 29px;
+}
+
+.activation-code-container button:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+}
+
+.activation-code-container button:active {
+    transform: translateY(1px);
+}
+
+/* 十连抽容器样式 */
+.ten-pull-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+/* 剩余次数显示样式 */
+.remaining-pulls {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+/* 十连抽按钮禁用状态的悬浮提示框 */
+.calc-btn.ten-draw:disabled::after {
+    content: '请输入激活码或单抽到6星以获取资格';
+    position: absolute;
+    top: calc(100% + 10px);  /* 改为位于按钮下方 */
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1;  /* 降低z-index确保不会遮挡其他元素 */
+}
+
+/* 修改小三角形位置 */
+.calc-btn.ten-draw:disabled::before {
+    content: '';
+    position: absolute;
+    top: calc(100% + 4px);  /* 改为位于按钮下方 */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(0, 0, 0, 0.8);  /* 改为向下的三角形 */
+    border-top: none;  /* 移除向上的三角形 */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+/* 悬浮时显示提示框和三角形 */
+.calc-btn.ten-draw:disabled:hover::after,
+.calc-btn.ten-draw:disabled:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+

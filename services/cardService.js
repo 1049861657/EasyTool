@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 class CardService {
     static async getCards() {
         try {
-            const imagesDir = path.join(dirname(__dirname), 'images');
+            const imagesDir = path.join(dirname(__dirname), 'public/drawCards');
             const files = await fs.readdir(imagesDir);
             
             // 过滤并解析卡片文件

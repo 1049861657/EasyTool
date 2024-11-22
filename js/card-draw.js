@@ -20,6 +20,12 @@ async function initializeCardDraw() {
         // 等待卡片加载完成
         await loadCards();
         
+        // 根据剩余次数设置十连抽按钮状态
+        const tenPullBtn = document.querySelector('.ten-draw');
+        if (tenPullBtn) {
+            tenPullBtn.disabled = remainingPulls <= 0;
+        }
+        
         // 添加统计信息容器
         const drawHistory = document.querySelector('.draw-history');
         if (drawHistory && !drawHistory.querySelector('.stats-info')) {
@@ -141,6 +147,8 @@ function drawCard() {
         drawsSinceLast6Star = 0;
         // 显示提示框
         showToast(`恭喜抽到 ${card.name}！`);
+        // 增加十连抽次数
+        window.addTenPullChance();
     }
     
     // 更新统计显示
@@ -150,7 +158,7 @@ function drawCard() {
     const resultDiv = document.getElementById("draw-result");
     resultDiv.innerHTML = `
         <div class="card-result">
-            <img src="/images/${card.image}" alt="${card.name}">
+            <img src="/public/drawCards/${card.image}" alt="${card.name}">
             <div class="card-info">
                 <div class="card-name">${card.name}</div>
                 <div class="card-rarity">
@@ -240,7 +248,7 @@ function showHighStarCards() {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
         cardElement.innerHTML = `
-            <img src="/images/${card.image}" alt="${card.name}">
+            <img src="/public/drawCards/${card.image}" alt="${card.name}">
             <p>${card.name}</p>
         `;
         scrollContent.appendChild(cardElement);
@@ -296,8 +304,13 @@ window.changeDrawHistoryPage = function(newPage) {
     }
 }
 
-// 添加十连抽函数
+// 修改 drawTenCards 函数
 function drawTenCards() {
+    // 先检查是否有抽卡次数，如果没有则直接返回
+    if (!canDoTenPull()) {
+        return;  // canDoTenPull 函数会显示提示并禁用按钮
+    }
+    
     const results = [];
     for(let i = 0; i < 10; i++) {
         // 获取一张卡但不显示结果
@@ -323,6 +336,8 @@ function drawTenCards() {
             sixStarDraws++;
             drawsSinceLast6Star = 0;
             showToast(`恭喜抽到 ${card.name}！`);
+            // 增加十连抽次数
+            window.addTenPullChance();
         } else if (rand < sixStarRate + 0.08) {
             const fiveStarCards = window.cards.filter(card => card.rarity === 5);
             card = fiveStarCards[Math.floor(Math.random() * fiveStarCards.length)];
@@ -378,7 +393,7 @@ function showDrawResults(cards) {
         <div class="card-results ${isMultiDraw ? 'multi-draw' : ''}">
             ${cards.map(card => `
                 <div class="card-result" style="width: ${cardWidth}">
-                    <img src="/images/${card.image}" alt="${card.name}">
+                    <img src="/public/drawCards/${card.image}" alt="${card.name}">
                     <div class="card-info">
                         <div class="card-name">${card.name}</div>
                         <div class="card-rarity">

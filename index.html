@@ -438,7 +438,7 @@
             overflow: hidden;
         }
 
-        /* 数据库连接头部样式 */
+        /* 数据库连头部样式 */
         .db-header {
             display: flex;
             justify-content: space-between;
@@ -846,7 +846,7 @@
             transform: rotate(-180deg);
         }
 
-        /* 添加可点击样式 */
+        /* 添加可点击样��� */
         .db-header {
             cursor: pointer;
         }
@@ -1122,7 +1122,7 @@
         <div class="database-viewer">
             <h2>数据库查看器</h2>
             
-            <!-- 连接配置 -->
+            <!-- 连接配 -->
             <div class="db-section">
                 <div class="db-header">
                     <h3>数据库连接</h3>
@@ -1229,6 +1229,12 @@
         <!-- 添加提示框元素 -->
         <div id="draw-toast"></div>
         
+        <!-- 激活码容器移到这里 -->
+        <div class="activation-code-container">
+            <input type="text" id="activationCode" placeholder="请输入激活码">
+            <button onclick="validateCode()">验证</button>
+        </div>
+        
         <div class="draw-container">
             <!-- 左侧抽卡区域 -->
             <div class="calculator">
@@ -1249,7 +1255,10 @@
                 </div>
                 <div class="draw-buttons">
                     <button class="calc-btn" onclick="drawCard()">单抽</button>
-                    <button class="calc-btn ten-draw" onclick="drawTenCards()">十连抽</button>
+                    <div class="ten-pull-container">
+                        <div id="remainingPulls" class="remaining-pulls">剩余次数：0</div>
+                        <button class="calc-btn ten-draw" onclick="drawTenCards()">十连抽</button>
+                    </div>
                 </div>
                 <div id="draw-result" class="result-display"></div>
             </div>
@@ -1285,6 +1294,7 @@
     <script src="js/webgl.js"></script>
     <script src="js/database.js"></script>
     <script src="js/card-draw.js"></script>
+    <script src="js/activation.js"></script>
     <script type="module">
         import ProxyRequest from './js/proxyRequest.js';
 
