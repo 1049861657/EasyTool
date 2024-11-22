@@ -158,7 +158,7 @@ function drawCard() {
     const resultDiv = document.getElementById("draw-result");
     resultDiv.innerHTML = `
         <div class="card-result">
-            <img src="/drawCards/${card.image}" alt="${card.name}">
+            <img src="/public/drawCards/${card.image}" alt="${card.name}">
             <div class="card-info">
                 <div class="card-name">${card.name}</div>
                 <div class="card-rarity">
@@ -248,7 +248,7 @@ function showHighStarCards() {
         const cardElement = document.createElement('div');
         cardElement.className = 'card';
         cardElement.innerHTML = `
-            <img src="/drawCards/${card.image}" alt="${card.name}">
+            <img src="/public/drawCards/${card.image}" alt="${card.name}">
             <p>${card.name}</p>
         `;
         scrollContent.appendChild(cardElement);
@@ -393,7 +393,7 @@ function showDrawResults(cards) {
         <div class="card-results ${isMultiDraw ? 'multi-draw' : ''}">
             ${cards.map(card => `
                 <div class="card-result" style="width: ${cardWidth}">
-                    <img src="/drawCards/${card.image}" alt="${card.name}">
+                    <img src="/public/drawCards/${card.image}" alt="${card.name}">
                     <div class="card-info">
                         <div class="card-name">${card.name}</div>
                         <div class="card-rarity">
