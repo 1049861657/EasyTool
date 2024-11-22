@@ -1,8 +1,8 @@
 {
   "routes": [
     {
-      "src": "/drawCards/(.*)",
-      "dest": "/public/drawCards/$1"
+      "src": "/public/drawCards/$1",
+      "dest": "/drawCards/(.*)"
     }
   ]
 } 
