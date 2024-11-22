@@ -57,6 +57,7 @@ app.use('/api/cards', cardsRouter);
 // 静态文件服务
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
+app.use('/drawCards',express.static(path.join(__dirname, 'public/drawCards')));
 app.use('/Build', express.static(path.join(__dirname, 'packaged_Navigation/Build')));
 app.use('/TemplateData', express.static(path.join(__dirname, 'packaged_Navigation/TemplateData')));
 app.use('/StreamingAssets', express.static(path.join(__dirname, 'packaged_Navigation/StreamingAssets')));
