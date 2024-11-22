@@ -12,7 +12,7 @@ class CardService {
              // 根据环境使用不同的路径
              const imagesDir = process.env.PLATFORM == 'vercel'
              ? path.join(dirname(__dirname), 'drawCards')  // Vercel 环境
-             : path.join(dirname(__dirname), 'public/drawCards');  // 其余
+             : path.join(dirname(__dirname), 'drawCards');  // 其余
             const files = await fs.readdir(imagesDir);
             
             // 过滤并解析卡片文件
