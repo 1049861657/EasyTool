@@ -6,7 +6,6 @@
 
 GitHub Pages: [https://1049861657.github.io/EasyTool/](https://1049861657.github.io/EasyTool/)  
 Render: [https://easytool.onrender.com/](https://easytool.onrender.com/)  
-Vercel: [https://easytool-neon.vercel.app/](https://easytool-neon.vercel.app/)
 
 ## ✨ 功能特性
 

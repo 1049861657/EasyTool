@@ -1,6 +1,6 @@
 {
   "name": "easy-tool",
-  "version": "1.05",
+  "version": "1.06",
   "description": "在线工具箱",
   "main": "server.js",
   "scripts": {
